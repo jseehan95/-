@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>콩콩 영단어 🐣</title>
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Gowun+Dodum&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#fff9f0; --bg2:#fff3e0; --card:#ffffff; --border:#f0d9c0;
+  --peach:#ff8c69; --peach2:#ffb38a; --mint:#5ec4b0; --mint2:#a8e6dd;
+  --pink:#ff7eb3; --pink2:#ffb8d4; --yellow:#ffd23f; --yellow2:#fff0a0;
+  --lavender:#b8a0e8; --text:#3d2c1e; --muted:#a08878;
+  --success:#4caf82; --fail:#ff6b6b; --shadow:rgba(180,120,80,0.12);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Gowun Dodum',sans-serif;min-height:100vh;
+  background-image:radial-gradient(circle at 20% 20%,rgba(255,179,138,.15) 0%,transparent 50%),
+  radial-gradient(circle at 80% 80%,rgba(94,196,176,.12) 0%,transparent 50%),
+  radial-gradient(circle at 60% 30%,rgba(184,160,232,.1) 0%,transparent 40%);}
+.app{max-width:820px;margin:0 auto;padding:24px 16px 80px;}
+
+/* TOP BAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.logo{font-family:'Gaegu',cursive;font-size:28px;font-weight:700;color:var(--peach);display:flex;align-items:center;gap:6px;}
+.logo .mm{font-size:24px;animation:wobble 3s infinite;}
+@keyframes wobble{0%,100%{transform:rotate(-5deg);}50%{transform:rotate(5deg);}}
+.stats-row{display:flex;gap:10px;align-items:center;}
+.stat-pill{display:flex;align-items:center;gap:5px;background:var(--card);border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;font-size:13px;font-weight:600;box-shadow:0 2px 8px var(--shadow);}
+.streak-pill{color:#ff6b35;border-color:#ffcbb0;}
+.xp-pill{color:#7c5cbf;border-color:var(--lavender);}
+
+/* LEVEL */
+.level-section{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:14px 18px;margin-bottom:16px;box-shadow:0 3px 12px var(--shadow);}
+.level-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.level-name{font-family:'Gaegu',cursive;font-size:16px;color:var(--peach);font-weight:700;}
+.level-xp{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);}
+.xp-bar{height:10px;background:var(--bg2);border-radius:10px;overflow:hidden;border:1px solid var(--border);}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--peach2),var(--peach));border-radius:10px;transition:width .8s cubic-bezier(.34,1.56,.64,1);}
+
+/* DATE BANNER */
+.date-banner{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,var(--peach2),var(--pink2));border-radius:14px;padding:12px 18px;margin-bottom:16px;box-shadow:0 3px 12px rgba(255,140,105,.2);}
+.date-text{font-family:'Gaegu',cursive;font-size:17px;color:white;text-shadow:0 1px 4px rgba(0,0,0,.15);flex:1;}
+.streak-fire{font-size:22px;animation:fire 1s infinite alternate;}
+@keyframes fire{from{transform:scale(1) rotate(-5deg);}to{transform:scale(1.15) rotate(5deg);}}
+.streak-count{font-family:'Gaegu',cursive;font-size:18px;color:white;font-weight:700;text-shadow:0 1px 4px rgba(0,0,0,.2);}
+
+/* MASCOT */
+.mascot-section{display:flex;gap:14px;align-items:flex-end;margin-bottom:20px;}
+.speech-bubble{background:var(--card);border:2px solid var(--border);border-radius:16px 16px 16px 4px;padding:12px 16px;font-size:14px;line-height:1.6;color:var(--text);box-shadow:0 3px 10px var(--shadow);max-width:480px;position:relative;}
+.speech-bubble::after{content:'';position:absolute;bottom:-10px;left:16px;border:5px solid transparent;border-top-color:var(--border);}
+.speech-bubble::before{content:'';position:absolute;bottom:-7px;left:17px;border:4px solid transparent;border-top-color:var(--card);z-index:1;}
+.mascot-emoji{font-size:64px;line-height:1;filter:drop-shadow(0 4px 8px rgba(0,0,0,.1));transition:all .3s;flex-shrink:0;animation:breathe 4s infinite;}
+@keyframes breathe{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-4px) scale(1.03);}}
+
+/* TABS */
+.tabs{display:flex;gap:8px;margin-bottom:20px;background:var(--card);padding:6px;border-radius:14px;border:1.5px solid var(--border);box-shadow:0 2px 8px var(--shadow);}
+.tab-btn{flex:1;padding:9px 8px;border-radius:10px;border:none;background:transparent;font-family:'Gowun Dodum',sans-serif;font-size:13px;color:var(--muted);cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:5px;}
+.tab-btn.active{background:linear-gradient(135deg,var(--peach2),var(--peach));color:white;box-shadow:0 3px 10px rgba(255,140,105,.3);font-weight:700;}
+.tab-badge{background:var(--fail);color:white;border-radius:10px;font-size:10px;padding:1px 5px;font-weight:700;}
+
+/* WORDS GRID */
+.words-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-bottom:20px;}
+.word-card{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:14px 16px;transition:all .2s;animation:popIn .4s cubic-bezier(.34,1.56,.64,1) both;position:relative;overflow:hidden;}
+@keyframes popIn{from{opacity:0;transform:scale(.85);}to{opacity:1;transform:scale(1);}}
+.word-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px var(--shadow);border-color:var(--peach2);}
+.word-card-accent{position:absolute;top:0;left:0;right:0;height:3px;border-radius:14px 14px 0 0;}
+.word-num{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:6px;}
+.word-en{font-family:'IBM Plex Mono',monospace;font-size:19px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.word-pos{display:inline-block;font-size:10px;border-radius:4px;padding:1px 6px;margin-bottom:6px;font-family:'IBM Plex Mono',monospace;}
+.pos-n{background:rgba(94,196,176,.15);color:var(--mint);border:1px solid rgba(94,196,176,.3);}
+.pos-v{background:rgba(255,126,179,.15);color:var(--pink);border:1px solid rgba(255,126,179,.3);}
+.pos-adj{background:rgba(184,160,232,.15);color:var(--lavender);border:1px solid rgba(184,160,232,.3);}
+.pos-adv{background:rgba(255,210,63,.15);color:#c49a00;border:1px solid rgba(255,210,63,.4);}
+.word-ko{font-size:14px;color:var(--muted);}
+.word-example{margin-top:8px;font-size:11px;color:#c0a898;font-style:italic;line-height:1.5;display:none;border-top:1px solid var(--border);padding-top:8px;}
+.word-card:hover .word-example{display:block;}
+.review-badge{position:absolute;top:8px;right:8px;font-size:9px;background:rgba(255,107,107,.15);border-radius:6px;padding:2px 6px;color:var(--fail);font-family:'IBM Plex Mono',monospace;}
+
+/* ACTIONS */
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;}
+.btn{font-family:'Gaegu',cursive;font-size:16px;padding:12px 24px;border-radius:50px;border:2px solid;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;}
+.btn-primary{background:linear-gradient(135deg,var(--peach2),var(--peach));border-color:var(--peach);color:white;box-shadow:0 4px 15px rgba(255,140,105,.35);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(255,140,105,.45);}
+.btn-mint{background:linear-gradient(135deg,var(--mint2),var(--mint));border-color:var(--mint);color:white;box-shadow:0 4px 15px rgba(94,196,176,.3);}
+.btn-mint:hover{transform:translateY(-2px);}
+.btn-ghost{background:var(--card);border-color:var(--border);color:var(--muted);}
+.btn-ghost:hover{border-color:var(--peach2);color:var(--peach);}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important;}
+
+/* BOSS BANNER */
+.boss-banner{background:linear-gradient(135deg,#2d1b69,#4a2080);border-radius:16px;padding:18px 20px;margin-bottom:16px;color:white;display:none;align-items:center;gap:14px;box-shadow:0 4px 20px rgba(74,32,128,.3);cursor:pointer;transition:transform .2s;}
+.boss-banner:hover{transform:translateY(-2px);}
+.boss-icon{font-size:40px;animation:bossFloat 2s infinite alternate;}
+@keyframes bossFloat{from{transform:translateY(0) rotate(-5deg);}to{transform:translateY(-6px) rotate(5deg);}}
+.boss-text h3{font-family:'Gaegu',cursive;font-size:18px;margin-bottom:4px;}
+.boss-text p{font-size:12px;opacity:.8;}
+
+/* QUIZ */
+#quiz-section{display:none;animation:popIn .3s ease;}
+.quiz-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.quiz-title{font-family:'Gaegu',cursive;font-size:22px;color:var(--peach);}
+.quiz-score-display{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted);}
+.quiz-score-display strong{color:var(--success);font-size:18px;}
+.quiz-dots{display:flex;gap:5px;margin-bottom:20px;flex-wrap:wrap;}
+.qdot{width:20px;height:20px;border-radius:50%;background:var(--border);transition:all .3s;font-size:10px;display:flex;align-items:center;justify-content:center;}
+.qdot.active{background:var(--peach2);transform:scale(1.2);}
+.qdot.correct{background:var(--success);}
+.qdot.wrong{background:var(--fail);}
+.quiz-card{background:var(--card);border:2px solid var(--border);border-radius:20px;padding:28px 24px;margin-bottom:16px;box-shadow:0 4px 20px var(--shadow);text-align:center;}
+.quiz-word-big{font-family:'IBM Plex Mono',monospace;font-size:38px;font-weight:600;color:var(--text);margin-bottom:8px;}
+.quiz-hint{font-size:12px;color:var(--muted);margin-bottom:24px;font-style:italic;}
+.quiz-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.q-opt{background:var(--bg);border:2px solid var(--border);border-radius:14px;padding:14px 12px;cursor:pointer;transition:all .15s;font-family:'Gowun Dodum',sans-serif;font-size:14px;color:var(--text);text-align:center;}
+.q-opt:hover:not(:disabled){border-color:var(--peach2);background:rgba(255,179,138,.08);transform:translateY(-2px);}
+.q-opt.correct{border-color:var(--success);background:rgba(76,175,130,.1);color:var(--success);}
+.q-opt.wrong{border-color:var(--fail);background:rgba(255,107,107,.1);color:var(--fail);}
+.q-opt:disabled{cursor:default;}
+.q-opt-label{display:block;font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);margin-bottom:4px;letter-spacing:1px;}
+
+/* RESULT */
+.quiz-result{display:none;text-align:center;padding:32px 16px;animation:popIn .5s ease;}
+.result-mascot{font-size:80px;margin-bottom:16px;animation:bounce .6s infinite alternate;}
+@keyframes bounce{from{transform:translateY(0);}to{transform:translateY(-12px);}}
+.result-big{font-family:'Gaegu',cursive;font-size:64px;font-weight:700;background:linear-gradient(135deg,var(--peach),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;}
+.result-msg{font-size:16px;color:var(--muted);margin-bottom:24px;line-height:1.7;}
+.xp-gain{display:inline-flex;align-items:center;gap:6px;background:rgba(184,160,232,.15);border:2px solid var(--lavender);border-radius:50px;padding:8px 20px;font-family:'Gaegu',cursive;font-size:18px;color:#7c5cbf;margin-bottom:24px;}
+.wrong-list{text-align:left;margin-bottom:24px;}
+.wrong-title{font-size:12px;color:var(--fail);font-family:'IBM Plex Mono',monospace;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;}
+.wrong-row{display:flex;justify-content:space-between;align-items:center;background:rgba(255,107,107,.06);border:1px solid rgba(255,107,107,.2);border-left:3px solid var(--fail);border-radius:10px;padding:10px 14px;margin-bottom:6px;}
+.wr-word{font-family:'IBM Plex Mono',monospace;font-size:15px;}
+.wr-ans{font-size:12px;color:var(--muted);}
+.wr-ans strong{color:var(--success);}
+
+/* REVIEW EMPTY */
+.review-empty{text-align:center;padding:48px 24px;color:var(--muted);font-size:15px;line-height:2;}
+.review-empty .big{font-size:48px;margin-bottom:8px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);padding:12px 24px;border-radius:50px;font-family:'Gaegu',cursive;font-size:16px;z-index:9999;transition:all .4s cubic-bezier(.34,1.56,.64,1);pointer-events:none;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast.ok{background:linear-gradient(135deg,#4caf82,#45d8a0);color:white;box-shadow:0 4px 20px rgba(76,175,130,.4);}
+.toast.ng{background:linear-gradient(135deg,#ff6b6b,#ff9a9a);color:white;box-shadow:0 4px 20px rgba(255,107,107,.4);}
+.toast.info{background:linear-gradient(135deg,var(--peach2),var(--peach));color:white;box-shadow:0 4px 20px rgba(255,140,105,.4);}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:10000;display:none;align-items:center;justify-content:center;}
+.modal-overlay.show{display:flex;}
+.modal-box{background:var(--card);border:3px solid var(--lavender);border-radius:24px;padding:40px 32px;text-align:center;max-width:360px;width:90%;animation:popIn .5s cubic-bezier(.34,1.56,.64,1);box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.modal-emoji{font-size:72px;margin-bottom:12px;}
+.modal-title{font-family:'Gaegu',cursive;font-size:28px;color:var(--peach);margin-bottom:8px;}
+.modal-sub{font-size:15px;color:var(--muted);margin-bottom:24px;line-height:1.6;}
+
+/* WORD PROGRESS BAR */
+.word-progress-section{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px 18px;margin-bottom:16px;box-shadow:0 3px 12px var(--shadow);}
+.wp-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.wp-label{font-family:'Gaegu',cursive;font-size:15px;color:var(--text);display:flex;align-items:center;gap:6px;}
+.wp-count{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);}
+.wp-count strong{color:var(--peach);font-size:14px;}
+.wp-bar-wrap{height:14px;background:var(--bg2);border-radius:10px;overflow:hidden;border:1.5px solid var(--border);position:relative;}
+.wp-bar-fill{height:100%;border-radius:10px;transition:width 1s cubic-bezier(.34,1.56,.64,1);position:relative;
+  background:linear-gradient(90deg,var(--mint2),var(--mint));}
+.wp-bar-fill::after{content:'';position:absolute;top:2px;left:6px;right:6px;height:4px;
+  background:rgba(255,255,255,.35);border-radius:4px;}
+.wp-segments{display:flex;gap:3px;margin-top:8px;}
+.wp-seg{flex:1;height:6px;border-radius:3px;background:var(--border);transition:background .4s;}
+.wp-seg.done{background:var(--mint);}
+.wp-seg.today{background:var(--peach2);}
+/* COMPLETE BANNER */
+.complete-banner{background:linear-gradient(135deg,#667eea,#764ba2);border-radius:16px;padding:20px 22px;margin-bottom:16px;color:white;text-align:center;box-shadow:0 4px 20px rgba(102,126,234,.35);animation:popIn .5s cubic-bezier(.34,1.56,.64,1);}
+.complete-banner h3{font-family:'Gaegu',cursive;font-size:22px;margin-bottom:6px;}
+.complete-banner p{font-size:13px;opacity:.9;line-height:1.6;margin-bottom:14px;}
+.complete-banner .btn-white{background:white;border-color:white;color:#764ba2;font-family:'Gaegu',cursive;font-size:15px;padding:10px 22px;border-radius:50px;border:none;cursor:pointer;font-weight:700;transition:transform .2s;box-shadow:0 3px 10px rgba(0,0,0,.15);}
+.complete-banner .btn-white:hover{transform:translateY(-2px);}
+/* PROGRESS (keep for compat) */
+.progress-info{text-align:center;padding:16px;color:var(--muted);font-size:13px;}
+.progress-bar-wrap{height:8px;background:var(--border);border-radius:8px;margin:8px 0;overflow:hidden;}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--peach2),var(--peach));border-radius:8px;transition:width .3s;}
+
+@media(max-width:560px){
+  .quiz-options{grid-template-columns:1fr;}
+  .quiz-word-big{font-size:28px;}
+  .words-grid{grid-template-columns:1fr;}
+  .result-big{font-size:48px;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="logo"><span class="mm">🐣</span>콩콩 영단어</div>
+    <div class="stats-row">
+      <div class="stat-pill streak-pill"><span>🔥</span><span id="streak-num">0</span>일</div>
+      <div class="stat-pill xp-pill"><span>⭐</span><span id="xp-num">0</span> XP</div>
+    </div>
+  </div>
+
+  <div class="level-section">
+    <div class="level-row">
+      <div class="level-name" id="level-name">🌱 새싹 단어장</div>
+      <div class="level-xp" id="level-xp-text">0 / 100 XP</div>
+    </div>
+    <div class="xp-bar"><div class="xp-fill" id="xp-bar-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="date-banner">
+    <span class="streak-fire">🔥</span>
+    <div class="date-text" id="date-text">오늘도 화이팅!</div>
+    <span class="streak-count" id="streak-label">0일 연속 🎉</span>
+  </div>
+
+  <div class="mascot-section">
+    <div>
+      <div class="speech-bubble" id="mascot-msg">안녕! 나는 콩콩이야 🐣<br>오늘의 단어를 불러오고 있어~!</div>
+    </div>
+    <div class="mascot-emoji" id="mascot-emoji">🐣</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('today')" id="tab-today">📚 오늘의 단어</button>
+    <button class="tab-btn" onclick="switchTab('review')" id="tab-review">
+      🔁 복습하기<span class="tab-badge" id="review-badge" style="display:none">0</span>
+    </button>
+  </div>
+
+  <!-- TODAY TAB -->
+  <div id="tab-today-content">
+
+    <!-- WORD PROGRESS BAR -->
+    <div class="word-progress-section" id="word-progress-section">
+      <div class="wp-row">
+        <div class="wp-label">📖 단어 진행도</div>
+        <div class="wp-count">남은 단어 <strong id="wp-remain">—</strong> / <span id="wp-total">414</span>개</div>
+      </div>
+      <div class="wp-bar-wrap">
+        <div class="wp-bar-fill" id="wp-bar-fill" style="width:0%"></div>
+      </div>
+      <div class="wp-segments" id="wp-segments"></div>
+    </div>
+
+    <!-- COMPLETE BANNER (숨김) -->
+    <div class="complete-banner" id="complete-banner" style="display:none">
+      <h3>🎉 모든 단어 완주!</h3>
+      <p>총 <strong id="complete-count">414</strong>개 단어를 다 외웠어!<br>나한테 새 단어 베이스 요청하면 바로 업데이트해줄게 🐣</p>
+      <button class="btn-white" onclick="copyRequest()">📋 요청 문구 복사하기</button>
+    </div>
+
+    <div id="boss-banner" class="boss-banner" onclick="startBossQuiz()">
+      <span class="boss-icon">👹</span>
+      <div class="boss-text"><h3>주간 보스 등장!</h3><p id="boss-desc">이번 주 배운 단어 전부 도전!</p></div>
+    </div>
+    <div class="words-grid" id="words-grid"></div>
+    <div class="actions">
+      <button class="btn btn-primary" id="quiz-btn" onclick="startQuiz('today')" disabled>✏️ 오늘의 테스트</button>
+      <button class="btn btn-ghost" id="shuffle-btn" onclick="loadWords(true)">🔄 다른 단어로</button>
+    </div>
+  </div>
+
+  <!-- REVIEW TAB -->
+  <div id="tab-review-content" style="display:none">
+    <div class="review-empty" id="review-empty">
+      <div class="big">🌟</div>
+      아직 복습할 단어가 없어!<br>오늘 테스트를 먼저 풀어봐 🐣
+    </div>
+    <div class="words-grid" id="review-grid"></div>
+    <div class="actions" id="review-actions" style="display:none">
+      <button class="btn btn-mint" onclick="startQuiz('review')">🔁 복습 테스트 시작</button>
+    </div>
+  </div>
+
+  <!-- QUIZ SECTION -->
+  <div id="quiz-section">
+    <div class="quiz-top">
+      <div class="quiz-title" id="quiz-title-label">오늘의 테스트 ✏️</div>
+      <div class="quiz-score-display"><strong id="score-now">0</strong> / <span id="score-total">15</span></div>
+    </div>
+    <div class="quiz-dots" id="quiz-dots"></div>
+    <div class="quiz-card" id="quiz-card">
+      <div class="quiz-word-big" id="q-word">—</div>
+      <div class="quiz-hint" id="q-pos-hint">품사 힌트</div>
+      <div class="quiz-options" id="q-opts"></div>
+    </div>
+    <div class="quiz-result" id="quiz-result">
+      <div class="result-mascot" id="res-mascot">🎉</div>
+      <div class="result-big" id="res-score">0/15</div>
+      <div class="result-msg" id="res-msg">—</div>
+      <div class="xp-gain" id="xp-gain-label">⭐ +0 XP</div>
+      <div class="wrong-list" id="wrong-list"></div>
+      <div class="actions" style="justify-content:center;flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="retryQuiz()">↺ 다시 풀기</button>
+        <button class="btn btn-ghost" onclick="backToStudy()">← 단어 보기</button>
+      </div>
+    </div>
+    <div class="actions" id="quiz-back">
+      <button class="btn btn-ghost" onclick="backToStudy()">← 단어 보기</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="lvl-modal">
+  <div class="modal-box">
+    <div class="modal-emoji">🎊</div>
+    <div class="modal-title" id="modal-title">레벨 업!</div>
+    <div class="modal-sub" id="modal-sub">새로운 단계로 올라갔어!</div>
+    <button class="btn btn-primary" onclick="closeModal()">계속하기 🐣</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== WORD DATABASE (414 words) =====
+const WORD_DB = [{"word":"allocate","pos":"v.","meaning":"배분하다, 할당하다","example":"We need to allocate more resources to the project."},{"word":"facilitate","pos":"v.","meaning":"촉진하다, 용이하게 하다","example":"The new software will facilitate communication between teams."},{"word":"implement","pos":"v.","meaning":"실행하다, 시행하다","example":"The company plans to implement a new policy next month."},{"word":"collaborate","pos":"v.","meaning":"협력하다, 공동 작업하다","example":"The two departments will collaborate on the report."},{"word":"coordinate","pos":"v.","meaning":"조율하다, 조정하다","example":"She coordinates the schedules of all team members."},{"word":"delegate","pos":"v.","meaning":"위임하다, 대표로 보내다","example":"The manager decided to delegate tasks to junior staff."},{"word":"negotiate","pos":"v.","meaning":"협상하다, 교섭하다","example":"They negotiated a better contract with the supplier."},{"word":"authorize","pos":"v.","meaning":"승인하다, 권한을 부여하다","example":"Only the director can authorize this expenditure."},{"word":"submit","pos":"v.","meaning":"제출하다","example":"Please submit your report by Friday."},{"word":"revise","pos":"v.","meaning":"수정하다, 개정하다","example":"He revised the proposal before sending it."},{"word":"outline","pos":"v.","meaning":"개요를 말하다, 약술하다","example":"She outlined the plan for the new project."},{"word":"oversee","pos":"v.","meaning":"감독하다, 관리하다","example":"He oversees the daily operations of the office."},{"word":"prioritize","pos":"v.","meaning":"우선순위를 정하다","example":"You need to prioritize your tasks for the week."},{"word":"streamline","pos":"v.","meaning":"효율화하다, 간소화하다","example":"The new process will streamline our workflow."},{"word":"assess","pos":"v.","meaning":"평가하다, 사정하다","example":"We need to assess the risks before proceeding."},{"word":"compile","pos":"v.","meaning":"편집하다, 모으다","example":"Please compile all the data into one report."},{"word":"verify","pos":"v.","meaning":"확인하다, 검증하다","example":"Can you verify the information before the meeting?"},{"word":"acquire","pos":"v.","meaning":"습득하다, 취득하다","example":"The firm acquired a smaller competitor last year."},{"word":"retain","pos":"v.","meaning":"유지하다, 보유하다","example":"The company needs to retain its top employees."},{"word":"monitor","pos":"v.","meaning":"감시하다, 모니터링하다","example":"We monitor the progress of each project weekly."},{"word":"agenda","pos":"n.","meaning":"의제, 안건","example":"Please review the agenda before the meeting."},{"word":"deadline","pos":"n.","meaning":"마감일, 기한","example":"The deadline for the report is next Monday."},{"word":"budget","pos":"n.","meaning":"예산","example":"We need to stay within the approved budget."},{"word":"revenue","pos":"n.","meaning":"수익, 매출","example":"The company's revenue increased by 15% last quarter."},{"word":"expenditure","pos":"n.","meaning":"지출, 비용","example":"The annual expenditure exceeded the budget."},{"word":"profit","pos":"n.","meaning":"이익, 수익","example":"The company reported a record profit this year."},{"word":"invoice","pos":"n.","meaning":"청구서, 송장","example":"Please send the invoice to our accounting department."},{"word":"contract","pos":"n.","meaning":"계약, 계약서","example":"Both parties signed the contract yesterday."},{"word":"proposal","pos":"n.","meaning":"제안, 제안서","example":"She submitted a proposal for a new marketing campaign."},{"word":"merchandise","pos":"n.","meaning":"상품, 물품","example":"The store offers a wide range of merchandise."},{"word":"inventory","pos":"n.","meaning":"재고, 목록","example":"We need to take inventory before the sale."},{"word":"subsidiary","pos":"n.","meaning":"자회사","example":"The subsidiary operates independently from the parent company."},{"word":"headquarters","pos":"n.","meaning":"본사, 본부","example":"The company's headquarters is located in Seoul."},{"word":"workforce","pos":"n.","meaning":"인력, 노동력","example":"The company has a skilled workforce of 500 employees."},{"word":"turnover","pos":"n.","meaning":"매출액, 이직률","example":"The annual turnover reached a new high this year."},{"word":"merger","pos":"n.","meaning":"합병","example":"The merger was completed after months of negotiation."},{"word":"acquisition","pos":"n.","meaning":"인수, 취득","example":"The acquisition of the startup strengthened our position."},{"word":"dividend","pos":"n.","meaning":"배당금","example":"Shareholders received a generous dividend this year."},{"word":"leverage","pos":"n.","meaning":"영향력, 레버리지","example":"The company used its leverage to secure better terms."},{"word":"portfolio","pos":"n.","meaning":"포트폴리오, 작품집","example":"His portfolio includes several successful projects."},{"word":"overhead","pos":"n.","meaning":"간접비, 경비","example":"We need to reduce our overhead costs."},{"word":"transaction","pos":"n.","meaning":"거래, 처리","example":"All transactions must be recorded immediately."},{"word":"surplus","pos":"n.","meaning":"잉여, 흑자","example":"The surplus was reinvested into the business."},{"word":"deficit","pos":"n.","meaning":"적자, 부족분","example":"The budget deficit must be addressed immediately."},{"word":"recruit","pos":"v.","meaning":"채용하다, 모집하다","example":"The company plans to recruit 50 new employees."},{"word":"applicant","pos":"n.","meaning":"지원자, 신청자","example":"There were over 200 applicants for the position."},{"word":"candidate","pos":"n.","meaning":"후보자, 지원자","example":"The hiring team selected three final candidates."},{"word":"qualification","pos":"n.","meaning":"자격, 자격증","example":"What qualifications are required for this role?"},{"word":"compensation","pos":"n.","meaning":"보상, 급여","example":"The compensation package includes health insurance."},{"word":"incentive","pos":"n.","meaning":"인센티브, 동기","example":"The bonus serves as an incentive for employees."},{"word":"probation","pos":"n.","meaning":"수습 기간","example":"New employees go through a three-month probation period."},{"word":"resignation","pos":"n.","meaning":"사직, 사임","example":"He submitted his resignation last Friday."},{"word":"termination","pos":"n.","meaning":"해고, 종료","example":"The termination letter was sent to the employee."},{"word":"promotion","pos":"n.","meaning":"승진, 홍보","example":"She received a promotion after excellent performance."},{"word":"appraisal","pos":"n.","meaning":"평가, 심사","example":"Annual appraisals are conducted every December."},{"word":"grievance","pos":"n.","meaning":"불만, 고충","example":"Employees can file a grievance with HR."},{"word":"orientation","pos":"n.","meaning":"오리엔테이션, 방향","example":"New hires attend an orientation on their first day."},{"word":"workload","pos":"n.","meaning":"업무량","example":"The team is struggling with the heavy workload."},{"word":"absenteeism","pos":"n.","meaning":"결근, 결석","example":"High absenteeism is affecting productivity."},{"word":"fiscal","pos":"adj.","meaning":"재정의, 회계의","example":"The fiscal year ends on December 31st."},{"word":"audit","pos":"n.","meaning":"감사, 회계 검사","example":"An external audit was conducted last quarter."},{"word":"depreciation","pos":"n.","meaning":"감가상각","example":"The equipment's depreciation is calculated annually."},{"word":"liability","pos":"n.","meaning":"부채, 책임","example":"The company has significant financial liabilities."},{"word":"asset","pos":"n.","meaning":"자산","example":"Cash is the most liquid asset a company can hold."},{"word":"equity","pos":"n.","meaning":"자본, 주식","example":"Shareholders' equity increased this year."},{"word":"interest","pos":"n.","meaning":"이자, 이익","example":"The loan carries a 5% annual interest rate."},{"word":"principal","pos":"n.","meaning":"원금, 주요한","example":"The principal amount must be repaid within five years."},{"word":"installment","pos":"n.","meaning":"할부, 분할 납부","example":"You can pay in monthly installments."},{"word":"reimburse","pos":"v.","meaning":"상환하다, 환급하다","example":"The company will reimburse your travel expenses."},{"word":"subsidy","pos":"n.","meaning":"보조금","example":"The government provides subsidies to small businesses."},{"word":"recession","pos":"n.","meaning":"경기 침체","example":"The economy entered a recession last year."},{"word":"inflation","pos":"n.","meaning":"인플레이션, 물가 상승","example":"Inflation has reduced consumer purchasing power."},{"word":"forecast","pos":"v.","meaning":"예측하다, 예보하다","example":"Analysts forecast strong growth for the next quarter."},{"word":"currency","pos":"n.","meaning":"통화, 화폐","example":"The local currency has weakened against the dollar."},{"word":"campaign","pos":"n.","meaning":"캠페인, 홍보 활동","example":"The marketing campaign was a great success."},{"word":"demographic","pos":"n.","meaning":"인구 통계, 타깃층","example":"Our target demographic is adults aged 25-40."},{"word":"branding","pos":"n.","meaning":"브랜딩, 브랜드 전략","example":"Good branding helps customers recognize your product."},{"word":"launch","pos":"v.","meaning":"출시하다, 시작하다","example":"The company will launch a new product next month."},{"word":"endorse","pos":"v.","meaning":"지지하다, 홍보하다","example":"A famous athlete endorsed the new sports drink."},{"word":"testimony","pos":"n.","meaning":"증언, 추천사","example":"Customer testimonials helped boost sales."},{"word":"segment","pos":"n.","meaning":"부문, 세그먼트","example":"We are targeting a new market segment."},{"word":"penetrate","pos":"v.","meaning":"침투하다, 개척하다","example":"The company aims to penetrate new markets."},{"word":"slogan","pos":"n.","meaning":"슬로건, 광고 문구","example":"The new slogan resonated with young consumers."},{"word":"survey","pos":"n.","meaning":"설문조사, 조사","example":"We conducted a survey to understand customer needs."},{"word":"feedback","pos":"n.","meaning":"피드백, 의견","example":"Customer feedback helped improve the product."},{"word":"distributor","pos":"n.","meaning":"유통업자, 판매사","example":"We need a reliable distributor in the region."},{"word":"retailer","pos":"n.","meaning":"소매업자","example":"The product is available at major retailers."},{"word":"wholesale","pos":"adj.","meaning":"도매의","example":"They offer wholesale prices for bulk orders."},{"word":"shipment","pos":"n.","meaning":"선적, 운송품","example":"The shipment will arrive within three business days."},{"word":"freight","pos":"n.","meaning":"화물, 운임","example":"Freight costs have increased significantly."},{"word":"warehouse","pos":"n.","meaning":"창고","example":"The goods are stored in our main warehouse."},{"word":"dispatch","pos":"v.","meaning":"발송하다, 파견하다","example":"The order was dispatched this morning."},{"word":"cargo","pos":"n.","meaning":"화물","example":"The cargo was delayed due to bad weather."},{"word":"customs","pos":"n.","meaning":"세관, 관세","example":"All imported goods must pass through customs."},{"word":"tariff","pos":"n.","meaning":"관세, 요금표","example":"New tariffs were imposed on imported goods."},{"word":"vendor","pos":"n.","meaning":"판매업체, 공급업체","example":"We are reviewing proposals from multiple vendors."},{"word":"procurement","pos":"n.","meaning":"조달, 구매","example":"The procurement team handles all supplier contracts."},{"word":"logistics","pos":"n.","meaning":"물류","example":"Efficient logistics is key to customer satisfaction."},{"word":"consignment","pos":"n.","meaning":"위탁, 위탁 판매","example":"The goods were sent on consignment."},{"word":"expedite","pos":"v.","meaning":"신속히 처리하다","example":"We need to expedite this order immediately."},{"word":"shortage","pos":"n.","meaning":"부족, 품귀","example":"There is a shortage of raw materials this month."},{"word":"transit","pos":"n.","meaning":"운송 중, 통과","example":"The package is currently in transit."},{"word":"conference","pos":"n.","meaning":"회의, 학술대회","example":"The annual conference will be held in Busan."},{"word":"minutes","pos":"n.","meaning":"회의록","example":"Please take the minutes during today's meeting."},{"word":"adjourn","pos":"v.","meaning":"휴회하다, 연기하다","example":"The meeting was adjourned until next week."},{"word":"clarify","pos":"v.","meaning":"명확히 하다","example":"Could you clarify what you mean by that?"},{"word":"summarize","pos":"v.","meaning":"요약하다","example":"Please summarize the key points of the discussion."},{"word":"elaborate","pos":"v.","meaning":"자세히 설명하다","example":"Can you elaborate on your proposal?"},{"word":"consensus","pos":"n.","meaning":"합의, 의견 일치","example":"We reached a consensus on the new policy."},{"word":"objection","pos":"n.","meaning":"반대, 이의","example":"There were no objections to the proposal."},{"word":"presentation","pos":"n.","meaning":"발표, 프레젠테이션","example":"She gave an excellent presentation to the board."},{"word":"correspondence","pos":"n.","meaning":"서신, 편지 왕래","example":"All correspondence should be kept on file."},{"word":"notification","pos":"n.","meaning":"통지, 알림","example":"You will receive a notification once it is approved."},{"word":"postpone","pos":"v.","meaning":"연기하다","example":"The meeting was postponed to the following week."},{"word":"reschedule","pos":"v.","meaning":"일정을 변경하다","example":"Can we reschedule the appointment for Thursday?"},{"word":"query","pos":"n.","meaning":"질의, 문의","example":"Please direct your query to the support team."},{"word":"efficient","pos":"adj.","meaning":"효율적인","example":"We need a more efficient system for tracking orders."},{"word":"effective","pos":"adj.","meaning":"효과적인","example":"The new training program is very effective."},{"word":"comprehensive","pos":"adj.","meaning":"포괄적인, 종합적인","example":"We need a comprehensive review of our processes."},{"word":"mandatory","pos":"adj.","meaning":"의무적인, 필수의","example":"Attendance at the training session is mandatory."},{"word":"confidential","pos":"adj.","meaning":"기밀의, 비밀의","example":"Please keep this information confidential."},{"word":"preliminary","pos":"adj.","meaning":"예비의, 사전의","example":"This is a preliminary report; the final will follow."},{"word":"subsequent","pos":"adj.","meaning":"그 다음의, 이후의","example":"Subsequent meetings will be held every two weeks."},{"word":"respective","pos":"adj.","meaning":"각각의, 해당하는","example":"Each department has its own respective budget."},{"word":"substantial","pos":"adj.","meaning":"상당한, 중요한","example":"There has been a substantial increase in sales."},{"word":"feasible","pos":"adj.","meaning":"실현 가능한","example":"Is it feasible to complete this within the deadline?"},{"word":"innovative","pos":"adj.","meaning":"혁신적인","example":"The company is known for its innovative products."},{"word":"competitive","pos":"adj.","meaning":"경쟁적인, 경쟁력 있는","example":"We need to offer competitive pricing to win clients."},{"word":"urgent","pos":"adj.","meaning":"긴급한","example":"This is an urgent matter that needs attention."},{"word":"flexible","pos":"adj.","meaning":"유연한","example":"We offer flexible working hours to our employees."},{"word":"reliable","pos":"adj.","meaning":"신뢰할 수 있는","example":"We need a reliable partner for this project."},{"word":"outstanding","pos":"adj.","meaning":"뛰어난, 미납의","example":"She received an award for outstanding performance."},{"word":"annual","pos":"adj.","meaning":"연례의, 매년의","example":"The annual report will be published next month."},{"word":"mutual","pos":"adj.","meaning":"상호의, 공통의","example":"This agreement is based on mutual benefit."},{"word":"prior","pos":"adj.","meaning":"이전의, 우선의","example":"Prior experience in sales is required."},{"word":"eligible","pos":"adj.","meaning":"자격이 있는","example":"Employees who work full-time are eligible for benefits."},{"word":"accordingly","pos":"adv.","meaning":"따라서, 그에 맞게","example":"Please adjust your schedule accordingly."},{"word":"consequently","pos":"adv.","meaning":"결과적으로","example":"The project was delayed; consequently, costs increased."},{"word":"simultaneously","pos":"adv.","meaning":"동시에","example":"Two projects were launched simultaneously."},{"word":"promptly","pos":"adv.","meaning":"즉시, 신속하게","example":"Please respond to the email promptly."},{"word":"thoroughly","pos":"adv.","meaning":"철저히, 완전히","example":"The report was thoroughly reviewed before submission."},{"word":"anticipate","pos":"v.","meaning":"예상하다, 기대하다","example":"We anticipate strong demand for the new product."},{"word":"comply","pos":"v.","meaning":"따르다, 준수하다","example":"All staff must comply with the safety regulations."},{"word":"confirm","pos":"v.","meaning":"확인하다, 확정하다","example":"Please confirm your attendance by Friday."},{"word":"enhance","pos":"v.","meaning":"향상시키다, 강화하다","example":"This training will enhance your communication skills."},{"word":"establish","pos":"v.","meaning":"설립하다, 확립하다","example":"The company was established in 1998."},{"word":"evaluate","pos":"v.","meaning":"평가하다","example":"We will evaluate all applications carefully."},{"word":"generate","pos":"v.","meaning":"창출하다, 발생시키다","example":"The new product is expected to generate high revenue."},{"word":"maintain","pos":"v.","meaning":"유지하다","example":"We must maintain high standards of quality."},{"word":"obtain","pos":"v.","meaning":"얻다, 획득하다","example":"You need to obtain approval before proceeding."},{"word":"propose","pos":"v.","meaning":"제안하다","example":"She proposed a new approach to the problem."},{"word":"resolve","pos":"v.","meaning":"해결하다","example":"We need to resolve the issue before the deadline."},{"word":"secure","pos":"v.","meaning":"확보하다, 보안하다","example":"We secured a new contract with a major client."},{"word":"specify","pos":"v.","meaning":"명시하다, 구체화하다","example":"Please specify the delivery date in your order."},{"word":"transfer","pos":"v.","meaning":"이전하다, 이체하다","example":"The funds will be transferred to your account."},{"word":"update","pos":"v.","meaning":"업데이트하다, 최신화하다","example":"Please update the client on the project status."},{"word":"withdraw","pos":"v.","meaning":"철회하다, 인출하다","example":"She decided to withdraw her application."},{"word":"extend","pos":"v.","meaning":"연장하다, 확대하다","example":"We would like to extend the contract for one more year."},{"word":"reduce","pos":"v.","meaning":"줄이다, 감소시키다","example":"We must reduce operating costs this quarter."},{"word":"suspend","pos":"v.","meaning":"중단하다, 연기하다","example":"The project has been suspended pending further review."},{"word":"accommodate","pos":"v.","meaning":"수용하다, 제공하다","example":"We can accommodate up to 200 guests at our venue."},{"word":"notify","pos":"v.","meaning":"알리다, 통보하다","example":"Please notify us at least 48 hours in advance."},{"word":"inquire","pos":"v.","meaning":"문의하다, 조사하다","example":"She called to inquire about the job opening."},{"word":"replace","pos":"v.","meaning":"교체하다, 대체하다","example":"The old equipment needs to be replaced."},{"word":"distribute","pos":"v.","meaning":"배포하다, 유통하다","example":"Please distribute the handouts before the meeting."},{"word":"require","pos":"v.","meaning":"요구하다, 필요로 하다","example":"This project requires a team of five people."},{"word":"approval","pos":"n.","meaning":"승인, 허가","example":"The project requires board approval."},{"word":"complaint","pos":"n.","meaning":"불만, 민원","example":"We received several complaints about the product."},{"word":"demand","pos":"n.","meaning":"수요, 요구","example":"There is high demand for our new product."},{"word":"expansion","pos":"n.","meaning":"확장, 팽창","example":"The company announced plans for overseas expansion."},{"word":"initiative","pos":"n.","meaning":"계획, 주도권","example":"The CEO launched a new environmental initiative."},{"word":"obligation","pos":"n.","meaning":"의무, 채무","example":"You have an obligation to fulfill the terms of the contract."},{"word":"opportunity","pos":"n.","meaning":"기회","example":"This is a great opportunity for career growth."},{"word":"outcome","pos":"n.","meaning":"결과, 성과","example":"The outcome of the meeting was positive."},{"word":"procedure","pos":"n.","meaning":"절차, 과정","example":"Please follow the standard procedure."},{"word":"regulation","pos":"n.","meaning":"규정, 규제","example":"All companies must comply with government regulations."},{"word":"strategy","pos":"n.","meaning":"전략","example":"We need a clear strategy to increase market share."},{"word":"supplier","pos":"n.","meaning":"공급업체","example":"We work with over 50 international suppliers."},{"word":"target","pos":"n.","meaning":"목표, 대상","example":"Our target is to increase sales by 20%."},{"word":"trademark","pos":"n.","meaning":"상표, 트레이드마크","example":"The company filed for a trademark on its logo."},{"word":"warranty","pos":"n.","meaning":"보증, 품질 보증","example":"The product comes with a one-year warranty."},{"word":"specification","pos":"n.","meaning":"사양, 명세서","example":"Please review the product specifications carefully."},{"word":"authorization","pos":"n.","meaning":"승인, 허가","example":"You need written authorization to access this area."},{"word":"personnel","pos":"n.","meaning":"직원, 인사부","example":"All personnel are required to attend the safety drill."},{"word":"premises","pos":"n.","meaning":"사업장, 부지","example":"Smoking is not allowed on the premises."},{"word":"quotation","pos":"n.","meaning":"견적서, 인용","example":"Please send us a quotation for the order."},{"word":"refund","pos":"n.","meaning":"환불","example":"The customer requested a full refund."},{"word":"subscription","pos":"n.","meaning":"구독, 가입","example":"Monthly subscriptions start at $9.99."},{"word":"tenure","pos":"n.","meaning":"재임 기간","example":"During her tenure, sales doubled."},{"word":"vacancy","pos":"n.","meaning":"공석, 빈 자리","example":"There is a vacancy in the marketing department."},{"word":"yield","pos":"n.","meaning":"수익률, 수확량","example":"The bond has a yield of 4% per year."},{"word":"accomplish","pos":"v.","meaning":"달성하다, 완수하다","example":"We accomplished all our goals this quarter."},{"word":"acknowledge","pos":"v.","meaning":"인정하다, 확인하다","example":"Please acknowledge receipt of this email."},{"word":"adjust","pos":"v.","meaning":"조정하다, 적응하다","example":"We need to adjust the project timeline."},{"word":"advise","pos":"v.","meaning":"조언하다, 알리다","example":"I advise you to read the contract carefully."},{"word":"affect","pos":"v.","meaning":"영향을 미치다","example":"Weather conditions can affect delivery times."},{"word":"apply","pos":"v.","meaning":"신청하다, 적용하다","example":"You can apply for the position online."},{"word":"arrange","pos":"v.","meaning":"준비하다, 배열하다","example":"Can you arrange a meeting for next week?"},{"word":"attach","pos":"v.","meaning":"첨부하다","example":"Please attach the required documents."},{"word":"attract","pos":"v.","meaning":"유치하다, 끌다","example":"The offer attracted many qualified candidates."},{"word":"benefit","pos":"v.","meaning":"이익을 얻다","example":"Employees benefit from the company's health plan."},{"word":"boost","pos":"v.","meaning":"높이다, 증가시키다","example":"The promotion helped boost sales significantly."},{"word":"calculate","pos":"v.","meaning":"계산하다","example":"Please calculate the total cost of the project."},{"word":"cancel","pos":"v.","meaning":"취소하다","example":"The client decided to cancel the order."},{"word":"charge","pos":"v.","meaning":"청구하다, 담당하다","example":"We charge a fee for express delivery."},{"word":"cite","pos":"v.","meaning":"인용하다, 언급하다","example":"She cited three examples to support her argument."},{"word":"convert","pos":"v.","meaning":"전환하다, 변환하다","example":"We need to convert the files to PDF format."},{"word":"cover","pos":"v.","meaning":"다루다, 보장하다","example":"The insurance covers all medical expenses."},{"word":"dedicate","pos":"v.","meaning":"전념하다, 헌신하다","example":"She dedicated herself to improving customer service."},{"word":"delay","pos":"v.","meaning":"지연시키다","example":"Bad weather delayed the shipment by two days."},{"word":"deliver","pos":"v.","meaning":"배달하다, 전달하다","example":"We guarantee to deliver within 48 hours."},{"word":"demonstrate","pos":"v.","meaning":"시연하다, 보여주다","example":"He demonstrated how the software works."},{"word":"deposit","pos":"v.","meaning":"입금하다, 예치하다","example":"Please deposit the payment into our account."},{"word":"determine","pos":"v.","meaning":"결정하다, 파악하다","example":"We need to determine the cause of the problem."},{"word":"develop","pos":"v.","meaning":"개발하다, 발전시키다","example":"We are developing a new product for the market."},{"word":"disclose","pos":"v.","meaning":"공개하다, 밝히다","example":"The company was required to disclose its finances."},{"word":"discuss","pos":"v.","meaning":"논의하다","example":"We will discuss the matter at the next meeting."},{"word":"draft","pos":"v.","meaning":"초안을 작성하다","example":"She drafted a new contract for the client."},{"word":"ensure","pos":"v.","meaning":"보장하다, 확실히 하다","example":"Please ensure all documents are signed."},{"word":"exceed","pos":"v.","meaning":"초과하다, 능가하다","example":"Sales exceeded our expectations this month."},{"word":"expand","pos":"v.","meaning":"확장하다","example":"The company plans to expand into new markets."},{"word":"fulfill","pos":"v.","meaning":"이행하다, 충족시키다","example":"We strive to fulfill all customer orders on time."},{"word":"handle","pos":"v.","meaning":"처리하다, 다루다","example":"She handles all client complaints professionally."},{"word":"identify","pos":"v.","meaning":"확인하다, 파악하다","example":"We need to identify the source of the problem."},{"word":"improve","pos":"v.","meaning":"개선하다","example":"We are working to improve our delivery process."},{"word":"increase","pos":"v.","meaning":"증가시키다","example":"We plan to increase our marketing budget."},{"word":"invest","pos":"v.","meaning":"투자하다","example":"The company will invest in new technology."},{"word":"manage","pos":"v.","meaning":"관리하다","example":"She manages a team of fifteen people."},{"word":"measure","pos":"v.","meaning":"측정하다, 평가하다","example":"We need to measure the success of the campaign."},{"word":"meet","pos":"v.","meaning":"충족하다, 만나다","example":"We must meet all the client's requirements."},{"word":"offer","pos":"v.","meaning":"제공하다, 제안하다","example":"The company offers excellent employee benefits."},{"word":"operate","pos":"v.","meaning":"운영하다, 작동하다","example":"The new system will operate more efficiently."},{"word":"organize","pos":"v.","meaning":"조직하다, 정리하다","example":"She organized the company's annual conference."},{"word":"participate","pos":"v.","meaning":"참가하다","example":"All employees are encouraged to participate."},{"word":"perform","pos":"v.","meaning":"수행하다, 실적을 내다","example":"He performs his duties with great dedication."},{"word":"prepare","pos":"v.","meaning":"준비하다","example":"Please prepare a summary for tomorrow's meeting."},{"word":"process","pos":"v.","meaning":"처리하다","example":"We process all orders within 24 hours."},{"word":"produce","pos":"v.","meaning":"생산하다","example":"The factory produces 500 units per day."},{"word":"provide","pos":"v.","meaning":"제공하다","example":"We provide training for all new employees."},{"word":"raise","pos":"v.","meaning":"올리다, 제기하다","example":"She raised an important point in the meeting."},{"word":"recognize","pos":"v.","meaning":"인정하다, 인식하다","example":"The company recognized her outstanding contributions."},{"word":"recommend","pos":"v.","meaning":"추천하다","example":"I strongly recommend this candidate for the role."},{"word":"register","pos":"v.","meaning":"등록하다","example":"Please register for the training session online."},{"word":"release","pos":"v.","meaning":"출시하다, 공개하다","example":"The company released its annual report today."},{"word":"renew","pos":"v.","meaning":"갱신하다","example":"Please remember to renew your membership."},{"word":"report","pos":"v.","meaning":"보고하다","example":"Staff must report any issues to their supervisor."},{"word":"represent","pos":"v.","meaning":"대표하다","example":"She represents the company at trade shows."},{"word":"respond","pos":"v.","meaning":"응답하다","example":"Please respond to the inquiry within 24 hours."},{"word":"schedule","pos":"v.","meaning":"일정을 잡다","example":"The meeting has been scheduled for Monday."},{"word":"select","pos":"v.","meaning":"선택하다","example":"The committee selected three finalists."},{"word":"serve","pos":"v.","meaning":"봉사하다, 제공하다","example":"We serve clients in over 30 countries."},{"word":"sign","pos":"v.","meaning":"서명하다","example":"Both parties signed the agreement."},{"word":"solve","pos":"v.","meaning":"해결하다","example":"We need to solve this issue before Friday."},{"word":"support","pos":"v.","meaning":"지원하다","example":"The team supported the new initiative fully."},{"word":"track","pos":"v.","meaning":"추적하다, 기록하다","example":"We track all shipments in real time."},{"word":"train","pos":"v.","meaning":"교육하다","example":"New employees are trained for two weeks."},{"word":"account","pos":"n.","meaning":"계정, 거래처","example":"Please update your account information."},{"word":"adjustment","pos":"n.","meaning":"조정, 수정","example":"We made a minor adjustment to the pricing."},{"word":"advancement","pos":"n.","meaning":"발전, 승진","example":"Career advancement is possible within two years."},{"word":"allowance","pos":"n.","meaning":"수당, 허용량","example":"Employees receive a monthly travel allowance."},{"word":"announcement","pos":"n.","meaning":"공지, 발표","example":"An official announcement will be made tomorrow."},{"word":"assembly","pos":"n.","meaning":"집회, 조립","example":"The assembly of parts takes place on the second floor."},{"word":"assignment","pos":"n.","meaning":"과제, 배정","example":"She completed her assignment ahead of schedule."},{"word":"assistance","pos":"n.","meaning":"지원, 도움","example":"Please contact us if you need any assistance."},{"word":"association","pos":"n.","meaning":"협회, 연관","example":"She is a member of the business association."},{"word":"attendance","pos":"n.","meaning":"참석, 출석","example":"Attendance at the seminar is mandatory."},{"word":"authority","pos":"n.","meaning":"권한, 당국","example":"She has the authority to approve expenditures."},{"word":"availability","pos":"n.","meaning":"이용 가능성","example":"Please check the availability of the meeting room."},{"word":"branch","pos":"n.","meaning":"지점, 부서","example":"The company has branches in five cities."},{"word":"capacity","pos":"n.","meaning":"용량, 능력","example":"The warehouse is now at full capacity."},{"word":"certificate","pos":"n.","meaning":"증명서, 자격증","example":"You need a certificate to operate this equipment."},{"word":"client","pos":"n.","meaning":"고객, 의뢰인","example":"Our client requested a revision to the proposal."},{"word":"colleague","pos":"n.","meaning":"동료","example":"She introduced me to her colleague from finance."},{"word":"commission","pos":"n.","meaning":"수수료, 위원회","example":"Salespeople earn a commission on each sale."},{"word":"committee","pos":"n.","meaning":"위원회","example":"The committee will review the application."},{"word":"competitor","pos":"n.","meaning":"경쟁자, 경쟁사","example":"Our main competitor lowered their prices."},{"word":"contribution","pos":"n.","meaning":"기여, 공헌","example":"Her contribution to the project was significant."},{"word":"cooperation","pos":"n.","meaning":"협력, 협조","example":"We appreciate your cooperation on this matter."},{"word":"coverage","pos":"n.","meaning":"보도, 보장 범위","example":"The insurance coverage includes dental care."},{"word":"description","pos":"n.","meaning":"설명, 묘사","example":"Please provide a description of the problem."},{"word":"directory","pos":"n.","meaning":"명부, 디렉토리","example":"You can find her number in the company directory."},{"word":"discount","pos":"n.","meaning":"할인","example":"We offer a 10% discount for bulk orders."},{"word":"division","pos":"n.","meaning":"부서, 분할","example":"She heads the international division."},{"word":"documentation","pos":"n.","meaning":"문서, 서류","example":"All documentation must be submitted online."},{"word":"edition","pos":"n.","meaning":"판, 에디션","example":"The second edition includes updated chapters."},{"word":"employee","pos":"n.","meaning":"직원","example":"All employees must complete the training."},{"word":"employer","pos":"n.","meaning":"고용주","example":"The employer provided health insurance."},{"word":"enrollment","pos":"n.","meaning":"등록, 입학","example":"Enrollment for the course closes on Friday."},{"word":"estimate","pos":"n.","meaning":"견적, 추정","example":"We received an estimate from three contractors."},{"word":"extension","pos":"n.","meaning":"연장, 내선번호","example":"Can I get an extension on the deadline?"},{"word":"facility","pos":"n.","meaning":"시설","example":"The new facility opens next month."},{"word":"factor","pos":"n.","meaning":"요소, 요인","example":"Price is a key factor in the buying decision."},{"word":"figure","pos":"n.","meaning":"수치, 인물","example":"The sales figures were higher than expected."},{"word":"foundation","pos":"n.","meaning":"기반, 재단","example":"Customer trust is the foundation of our business."},{"word":"fund","pos":"n.","meaning":"자금, 기금","example":"We need additional funds for the new project."},{"word":"guideline","pos":"n.","meaning":"가이드라인, 지침","example":"Please follow the company's guidelines."},{"word":"impact","pos":"n.","meaning":"영향, 충격","example":"The new policy had a major impact on productivity."},{"word":"improvement","pos":"n.","meaning":"개선, 향상","example":"We have seen significant improvement this year."},{"word":"income","pos":"n.","meaning":"수입, 소득","example":"Net income increased by 12% last year."},{"word":"industry","pos":"n.","meaning":"산업, 업종","example":"The tech industry is growing rapidly."},{"word":"institution","pos":"n.","meaning":"기관, 기관","example":"This is a well-respected financial institution."},{"word":"instruction","pos":"n.","meaning":"지시, 설명서","example":"Please read the instructions carefully."},{"word":"insurance","pos":"n.","meaning":"보험","example":"The company offers health insurance to all employees."},{"word":"investment","pos":"n.","meaning":"투자","example":"The investment paid off within two years."},{"word":"labor","pos":"n.","meaning":"노동, 노동력","example":"Labor costs have risen significantly this year."},{"word":"lease","pos":"n.","meaning":"임대차, 리스","example":"The office lease expires in December."},{"word":"license","pos":"n.","meaning":"면허, 허가증","example":"A business license is required to operate here."},{"word":"loss","pos":"n.","meaning":"손실, 손해","example":"The company reported a net loss last quarter."},{"word":"maintenance","pos":"n.","meaning":"유지보수","example":"Regular maintenance is required for the machines."},{"word":"management","pos":"n.","meaning":"경영, 관리","example":"Good management is key to company success."},{"word":"manufacturer","pos":"n.","meaning":"제조업체","example":"We work directly with the manufacturer."},{"word":"margin","pos":"n.","meaning":"마진, 여백","example":"Our profit margin is about 20%."},{"word":"market","pos":"n.","meaning":"시장","example":"We need to explore new markets abroad."},{"word":"material","pos":"n.","meaning":"재료, 자료","example":"The materials for the project have been ordered."},{"word":"objective","pos":"n.","meaning":"목표, 목적","example":"What is the main objective of this project?"},{"word":"operation","pos":"n.","meaning":"운영, 작업","example":"Daily operations are managed by the team leader."},{"word":"option","pos":"n.","meaning":"선택, 옵션","example":"We have several options to consider."},{"word":"order","pos":"n.","meaning":"주문, 명령","example":"The order will be shipped within two days."},{"word":"output","pos":"n.","meaning":"생산량, 출력","example":"Monthly output has increased by 15%."},{"word":"participant","pos":"n.","meaning":"참가자","example":"All participants received a certificate."},{"word":"partner","pos":"n.","meaning":"파트너, 협력사","example":"We are looking for a business partner in Europe."},{"word":"payment","pos":"n.","meaning":"지불, 납부","example":"Payment is due within 30 days of the invoice."},{"word":"performance","pos":"n.","meaning":"성과, 실적","example":"Employee performance is reviewed every six months."},{"word":"permission","pos":"n.","meaning":"허가, 허락","example":"You need written permission to use this image."},{"word":"position","pos":"n.","meaning":"직위, 위치","example":"She applied for a managerial position."},{"word":"preference","pos":"n.","meaning":"선호, 우선","example":"Please indicate your schedule preference."},{"word":"premium","pos":"n.","meaning":"프리미엄, 보험료","example":"The monthly insurance premium is $150."},{"word":"product","pos":"n.","meaning":"제품","example":"Our latest product has received great reviews."},{"word":"productivity","pos":"n.","meaning":"생산성","example":"New tools have increased productivity by 30%."},{"word":"profile","pos":"n.","meaning":"프로필, 소개","example":"Please update your profile on the company website."},{"word":"progress","pos":"n.","meaning":"진전, 진행","example":"Please provide a progress report by Monday."},{"word":"purchase","pos":"n.","meaning":"구입, 구매","example":"The purchase was approved by the finance team."},{"word":"quality","pos":"n.","meaning":"품질","example":"We never compromise on quality."},{"word":"quantity","pos":"n.","meaning":"수량","example":"Please confirm the quantity before ordering."},{"word":"quarter","pos":"n.","meaning":"분기","example":"Sales were up 10% compared to last quarter."},{"word":"range","pos":"n.","meaning":"범위, 종류","example":"We offer a wide range of services."},{"word":"rate","pos":"n.","meaning":"요금, 비율","example":"The interest rate increased by 0.5%."},{"word":"receipt","pos":"n.","meaning":"영수증, 수령","example":"Please keep the receipt for reimbursement."},{"word":"record","pos":"n.","meaning":"기록","example":"We keep detailed records of all transactions."},{"word":"relationship","pos":"n.","meaning":"관계","example":"Building strong relationships with clients is key."},{"word":"request","pos":"n.","meaning":"요청","example":"Your request has been forwarded to the manager."},{"word":"requirement","pos":"n.","meaning":"요건, 조건","example":"Please review the job requirements carefully."},{"word":"resource","pos":"n.","meaning":"자원, 리소스","example":"We need to allocate more resources to this project."},{"word":"result","pos":"n.","meaning":"결과","example":"The results of the survey were encouraging."},{"word":"review","pos":"n.","meaning":"검토, 리뷰","example":"The annual review takes place in December."},{"word":"revision","pos":"n.","meaning":"수정, 개정","example":"Please make the requested revisions to the report."},{"word":"reward","pos":"n.","meaning":"보상","example":"Hard work is always rewarded here."},{"word":"risk","pos":"n.","meaning":"위험, 리스크","example":"We need to assess the financial risk carefully."},{"word":"role","pos":"n.","meaning":"역할","example":"What is your role in this project?"},{"word":"safety","pos":"n.","meaning":"안전","example":"Safety is our top priority on the work floor."},{"word":"sale","pos":"n.","meaning":"판매, 매출","example":"Sales have increased every month this year."},{"word":"section","pos":"n.","meaning":"부문, 섹션","example":"Please refer to section three of the manual."},{"word":"sector","pos":"n.","meaning":"분야, 섹터","example":"She works in the public sector."},{"word":"selection","pos":"n.","meaning":"선택, 선발","example":"The selection process takes about two weeks."},{"word":"seminar","pos":"n.","meaning":"세미나","example":"She attended a marketing seminar last week."},{"word":"service","pos":"n.","meaning":"서비스","example":"Our customer service team is available 24/7."},{"word":"settlement","pos":"n.","meaning":"합의, 정산","example":"The dispute was resolved through a settlement."},{"word":"share","pos":"n.","meaning":"주식, 점유율","example":"The company's market share grew by 5%."},{"word":"shareholder","pos":"n.","meaning":"주주","example":"Shareholders voted in favor of the merger."},{"word":"shift","pos":"n.","meaning":"교대, 변화","example":"He works the night shift at the factory."},{"word":"solution","pos":"n.","meaning":"해결책","example":"We need to find a solution as soon as possible."},{"word":"source","pos":"n.","meaning":"출처, 원천","example":"What is the source of this data?"},{"word":"standard","pos":"n.","meaning":"기준, 표준","example":"We maintain the highest industry standards."},{"word":"statement","pos":"n.","meaning":"진술, 명세서","example":"Please review the monthly financial statement."},{"word":"status","pos":"n.","meaning":"상태, 현황","example":"What is the current status of the order?"},{"word":"stock","pos":"n.","meaning":"재고, 주식","example":"We are running low on stock for this item."},{"word":"structure","pos":"n.","meaning":"구조, 체계","example":"The organizational structure was recently changed."},{"word":"summary","pos":"n.","meaning":"요약","example":"Please provide a brief summary of the meeting."},{"word":"supply","pos":"n.","meaning":"공급","example":"Supply chain issues affected our production."},{"word":"system","pos":"n.","meaning":"시스템","example":"We need to upgrade our IT system."},{"word":"task","pos":"n.","meaning":"과업, 작업","example":"Each team member has been assigned a specific task."},{"word":"technology","pos":"n.","meaning":"기술","example":"New technology has transformed our industry."},{"word":"terms","pos":"n.","meaning":"조건, 약관","example":"Please read the terms before signing."},{"word":"trend","pos":"n.","meaning":"추세, 트렌드","example":"Current market trends favor digital solutions."},{"word":"accurate","pos":"adj.","meaning":"정확한","example":"Please ensure the figures are accurate."},{"word":"adequate","pos":"adj.","meaning":"적절한, 충분한","example":"We need adequate time to complete the task."},{"word":"applicable","pos":"adj.","meaning":"적용 가능한","example":"These rules are applicable to all employees."},{"word":"appropriate","pos":"adj.","meaning":"적절한","example":"Please dress in appropriate business attire."},{"word":"available","pos":"adj.","meaning":"이용 가능한","example":"Is the conference room available on Monday?"},{"word":"beneficial","pos":"adj.","meaning":"유익한, 도움이 되는","example":"The merger will be beneficial for both companies."},{"word":"considerable","pos":"adj.","meaning":"상당한","example":"There was considerable interest in the new product."},{"word":"consistent","pos":"adj.","meaning":"일관된","example":"We need consistent quality across all products."},{"word":"crucial","pos":"adj.","meaning":"중요한, 결정적인","example":"This decision is crucial for our future success."},{"word":"current","pos":"adj.","meaning":"현재의","example":"What is the current status of the project?"},{"word":"dedicated","pos":"adj.","meaning":"헌신적인, 전용의","example":"She is a dedicated employee with great skills."},{"word":"demanding","pos":"adj.","meaning":"요구가 많은, 힘든","example":"This is a very demanding role."},{"word":"detailed","pos":"adj.","meaning":"상세한","example":"Please provide a detailed breakdown of costs."},{"word":"domestic","pos":"adj.","meaning":"국내의","example":"Domestic sales have been very strong."},{"word":"dominant","pos":"adj.","meaning":"지배적인, 우세한","example":"They are the dominant player in the market."},{"word":"extensive","pos":"adj.","meaning":"광범위한, 방대한","example":"She has extensive experience in finance."},{"word":"external","pos":"adj.","meaning":"외부의","example":"We hired an external consultant for the project."},{"word":"final","pos":"adj.","meaning":"최종의","example":"Please review the final draft before submission."},{"word":"financial","pos":"adj.","meaning":"재정적인","example":"We are reviewing the company's financial performance."},{"word":"global","pos":"adj.","meaning":"세계적인, 글로벌","example":"The company has a strong global presence."},{"word":"immediate","pos":"adj.","meaning":"즉각적인","example":"We need an immediate response to this issue."},{"word":"internal","pos":"adj.","meaning":"내부의","example":"This is an internal memo for staff only."},{"word":"leading","pos":"adj.","meaning":"선도적인","example":"We are a leading supplier in the industry."},{"word":"limited","pos":"adj.","meaning":"제한된","example":"Availability is limited, so book early."},{"word":"local","pos":"adj.","meaning":"지역의","example":"We work with local suppliers whenever possible."},{"word":"major","pos":"adj.","meaning":"주요한","example":"This is a major step for the company."},{"word":"minimum","pos":"adj.","meaning":"최소의","example":"The minimum order quantity is 50 units."},{"word":"necessary","pos":"adj.","meaning":"필요한","example":"Please bring all necessary documents."},{"word":"official","pos":"adj.","meaning":"공식적인","example":"This is the official company policy."},{"word":"operational","pos":"adj.","meaning":"운영상의","example":"There was an operational issue this morning."},{"word":"permanent","pos":"adj.","meaning":"영구적인","example":"She was offered a permanent position."},{"word":"potential","pos":"adj.","meaning":"잠재적인","example":"This is a potential market for our products."},{"word":"professional","pos":"adj.","meaning":"전문적인","example":"Please maintain a professional tone in emails."},{"word":"qualified","pos":"adj.","meaning":"자격을 갖춘","example":"We are looking for a qualified accountant."},{"word":"relevant","pos":"adj.","meaning":"관련된","example":"Please include only relevant information."},{"word":"significant","pos":"adj.","meaning":"중요한, 상당한","example":"There has been a significant increase in costs."},{"word":"strategic","pos":"adj.","meaning":"전략적인","example":"This is a strategic partnership for both firms."},{"word":"temporary","pos":"adj.","meaning":"임시의","example":"We need a temporary replacement for the role."},{"word":"valuable","pos":"adj.","meaning":"가치 있는","example":"Her feedback was extremely valuable."},{"word":"various","pos":"adj.","meaning":"다양한","example":"We offer products in various sizes."}];
+
+// ===== LEVELS =====
+const LEVELS=[
+  {name:'🌱 새싹 단어장',xp:0},
+  {name:'📖 단어 입문자',xp:100},
+  {name:'✏️ 열공 중!',xp:250},
+  {name:'💼 비즈니스 루키',xp:450},
+  {name:'🌟 토익 도전자',xp:700},
+  {name:'🎯 토익 준비완료',xp:1000},
+  {name:'🏆 토익 마스터',xp:1400},
+  {name:'💎 영어 천재',xp:2000},
+];
+
+// ===== STATE =====
+let todayWords=[], quizWords=[], reviewWords=[], currentQ=0, quizScore=0, wrongInQuiz=[], quizMode='today';
+
+const TODAY=(()=>{const d=new Date();return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;})();
+const WEEKDAY=new Date().getDay();
+const ACCENTS=['#ff8c69','#5ec4b0','#ff7eb3','#b8a0e8','#ffd23f','#64b5f6','#81c784','#ffb74d'];
+
+// ===== SAFE STORAGE (iPad Safari file:// 모드 대응) =====
+const _mem={};
+let _lsOk=(()=>{try{localStorage.setItem('__t','1');localStorage.removeItem('__t');return true;}catch{return false;}})();
+function gs(k){try{if(_lsOk)return JSON.parse(localStorage.getItem(k));}catch{_lsOk=false;}return _mem[k]??null;}
+function ss(k,v){try{if(_lsOk){localStorage.setItem(k,JSON.stringify(v));return;}}catch{_lsOk=false;}_mem[k]=v;}
+
+function getState(){
+  return gs('kk_state')||{xp:0,streak:0,lastVisit:null,reviewQueue:[],weekWords:[]};
+}
+function saveState(s){ss('kk_state',s);}
+
+// ===== INIT =====
+window.addEventListener('DOMContentLoaded',()=>{
+  updateStreak();
+  renderStats();
+  loadWords(false);
+  renderReviewTab();
+  const d=new Date();
+  const days=['일','월','화','수','목','금','토'];
+  document.getElementById('date-text').textContent=
+    `${d.getMonth()+1}월 ${d.getDate()}일 (${days[d.getDay()]}) 오늘도 화이팅!`;
+  if(WEEKDAY===0){
+    const st=getState();
+    if((st.weekWords||[]).length>=10){
+      const b=document.getElementById('boss-banner');
+      b.style.display='flex';
+      document.getElementById('boss-desc').textContent=`이번 주 ${st.weekWords.length}개 단어에 도전!`;
+    }
+  }
+});
+
+// ===== STREAK =====
+function updateStreak(){
+  const st=getState();
+  const d=new Date(); d.setDate(d.getDate()-1);
+  const yest=`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+  if(st.lastVisit===TODAY){}
+  else if(st.lastVisit===yest){st.streak++;}
+  else{st.streak=1;}
+  st.lastVisit=TODAY;
+  saveState(st);
+}
+
+// ===== STATS =====
+function renderStats(){
+  const st=getState();
+  document.getElementById('streak-num').textContent=st.streak;
+  document.getElementById('xp-num').textContent=st.xp;
+  document.getElementById('streak-label').textContent=`${st.streak}일 연속 🎉`;
+  let lvl=0;
+  for(let i=LEVELS.length-1;i>=0;i--){if(st.xp>=LEVELS[i].xp){lvl=i;break;}}
+  const cur=LEVELS[lvl],next=LEVELS[lvl+1];
+  document.getElementById('level-name').textContent=cur.name;
+  if(next){
+    const prog=(st.xp-cur.xp)/(next.xp-cur.xp);
+    document.getElementById('xp-bar-fill').style.width=Math.min(100,prog*100)+'%';
+    document.getElementById('level-xp-text').textContent=`${st.xp-cur.xp} / ${next.xp-cur.xp} XP`;
+  }else{
+    document.getElementById('xp-bar-fill').style.width='100%';
+    document.getElementById('level-xp-text').textContent=`${st.xp} XP — 최고 레벨!`;
+  }
+}
+
+function addXP(amount){
+  const st=getState();
+  const old=st.xp; st.xp+=amount;
+  let ol=0,nl=0;
+  for(let i=LEVELS.length-1;i>=0;i--){if(old>=LEVELS[i].xp){ol=i;break;}}
+  for(let i=LEVELS.length-1;i>=0;i--){if(st.xp>=LEVELS[i].xp){nl=i;break;}}
+  saveState(st); renderStats();
+  if(nl>ol) setTimeout(()=>showLevelUpModal(LEVELS[nl].name),800);
+}
+
+// ===== LOAD WORDS =====
+function loadWords(force){
+  if(!force){
+    const c=gs('kk_words');
+    if(c&&c.date===TODAY&&c.words&&c.words.length===15){
+      todayWords=c.words;
+      renderWords();
+      return;
+    }
+  }
+  // Pick 15 words based on date seed, avoiding recent used words
+  const used=new Set((gs('kk_history')||[]).slice(-90));
+  const available=WORD_DB.filter(w=>!used.has(w.word));
+  const pool=available.length>=15?available:WORD_DB;
+
+  // Seeded shuffle by date + random if forced
+  const seed=force?Math.random()*999999|0:getDayNum();
+  const shuffled=seededShuffle([...pool],seed);
+  todayWords=shuffled.slice(0,15);
+
+  ss('kk_words',{date:TODAY,words:todayWords});
+  const hist=gs('kk_history')||[];
+  ss('kk_history',[...hist,...todayWords.map(w=>w.word)].slice(-500));
+
+  const st=getState();
+  st.weekWords=[...(st.weekWords||[]),...todayWords.map(w=>w.word)].slice(-105);
+  saveState(st);
+
+  renderWords();
+  showMascot('새 단어 15개 준비됐어! 카드에 마우스 올리면 예문도 볼 수 있어 📖','🐣');
+}
+
+function getDayNum(){
+  const d=new Date();
+  return d.getFullYear()*1000+d.getMonth()*31+d.getDate();
+}
+
+function seededShuffle(arr, seed){
+  let s=seed;
+  const rng=()=>{s=(s*1664525+1013904223)&0xffffffff;return(s>>>0)/0xffffffff;};
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(rng()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ===== RENDER WORDS =====
+function renderWords(){
+  const grid=document.getElementById('words-grid');
+  grid.innerHTML='';
+  const st=getState();
+  const reviewSet=new Set((st.reviewQueue||[]).map(r=>r.word));
+  document.getElementById('quiz-btn').disabled=false;
+
+  todayWords.forEach((w,i)=>{
+    const card=document.createElement('div');
+    card.className='word-card';
+    card.style.animationDelay=(i*50)+'ms';
+    const pc=w.pos.startsWith('v')?'pos-v':w.pos.startsWith('adj')?'pos-adj':w.pos.startsWith('adv')?'pos-adv':'pos-n';
+    card.innerHTML=`
+      <div class="word-card-accent" style="background:${ACCENTS[i%ACCENTS.length]}"></div>
+      ${reviewSet.has(w.word)?'<span class="review-badge">🔁 복습예정</span>':''}
+      <div class="word-num">${String(i+1).padStart(2,'0')}</div>
+      <div class="word-en">${w.word}</div>
+      <div class="word-pos ${pc}">${w.pos}</div>
+      <div class="word-ko">${w.meaning}</div>
+      ${w.example?'<div class="word-example">"'+w.example+'"</div>':''}
+    `;
+    grid.appendChild(card);
+  });
+  renderWordProgress();
+}
+
+// ===== REVIEW =====
+function renderReviewTab(){
+  const st=getState();
+  const due=getDueReviews();
+  const badge=document.getElementById('review-badge');
+  if(due.length>0){badge.style.display='inline';badge.textContent=due.length;}
+  else badge.style.display='none';
+
+  const grid=document.getElementById('review-grid');
+  const empty=document.getElementById('review-empty');
+  const actions=document.getElementById('review-actions');
+  if(due.length===0){empty.style.display='block';grid.innerHTML='';actions.style.display='none';}
+  else{
+    empty.style.display='none';actions.style.display='flex';
+    grid.innerHTML='';
+    due.forEach((w,i)=>{
+      const card=document.createElement('div');
+      card.className='word-card';
+      card.style.animationDelay=(i*50)+'ms';
+      const pc=w.pos&&w.pos.startsWith('v')?'pos-v':'pos-n';
+      card.innerHTML=`
+        <div class="word-card-accent" style="background:#ff6b6b"></div>
+        <div class="word-num">복습 ${w.reviewCount||1}회차</div>
+        <div class="word-en">${w.word}</div>
+        <div class="word-pos ${pc}">${w.pos||'n.'}</div>
+        <div class="word-ko">${w.meaning}</div>
+        ${w.example?'<div class="word-example">"'+w.example+'"</div>':''}
+      `;
+      grid.appendChild(card);
+    });
+    reviewWords=due;
+  }
+}
+
+function getDueReviews(){
+  const st=getState();
+  return(st.reviewQueue||[]).filter(r=>!r.nextReview||new Date()>=new Date(r.nextReview));
+}
+
+function addToReview(word){
+  const st=getState();
+  if(!st.reviewQueue)st.reviewQueue=[];
+  const ex=st.reviewQueue.find(r=>r.word===word.word);
+  if(ex){ex.reviewCount=(ex.reviewCount||0)+1;}
+  else st.reviewQueue.push({...word,addedDate:TODAY,reviewCount:1});
+  saveState(st);
+}
+
+function markReviewCorrect(wordStr){
+  const st=getState();
+  const idx=st.reviewQueue.findIndex(r=>r.word===wordStr);
+  if(idx===-1)return;
+  const item=st.reviewQueue[idx];
+  item.reviewCount=(item.reviewCount||1)+1;
+  if(item.reviewCount>4){
+    st.reviewQueue.splice(idx,1);
+    showToast('🎓 완전히 외웠어! 복습 목록 졸업!','info');
+  }else{
+    const gaps=[1,3,7];
+    const next=new Date();
+    next.setDate(next.getDate()+gaps[Math.min(item.reviewCount-2,2)]);
+    item.nextReview=next.toISOString();
+  }
+  saveState(st);
+}
+
+// ===== TABS =====
+function switchTab(tab){
+  document.getElementById('tab-today-content').style.display=tab==='today'?'block':'none';
+  document.getElementById('tab-review-content').style.display=tab==='review'?'block':'none';
+  document.getElementById('tab-today').classList.toggle('active',tab==='today');
+  document.getElementById('tab-review').classList.toggle('active',tab==='review');
+  if(tab==='review')renderReviewTab();
+}
+
+// ===== QUIZ =====
+function startQuiz(mode){
+  quizMode=mode;
+  const src=mode==='today'?todayWords:reviewWords;
+  if(!src||src.length===0){showToast('단어가 없어요!','info');return;}
+  quizWords=[...src].sort(()=>Math.random()-.5);
+  currentQ=0;quizScore=0;wrongInQuiz=[];
+  document.getElementById('score-now').textContent='0';
+  document.getElementById('score-total').textContent=quizWords.length;
+  document.getElementById('quiz-title-label').textContent=
+    mode==='today'?'오늘의 테스트 ✏️':mode==='boss'?'주간 보스전 👹':'복습 테스트 🔁';
+  const dots=document.getElementById('quiz-dots');
+  dots.innerHTML=quizWords.map((_,i)=>`<div class="qdot" id="qdot-${i}">·</div>`).join('');
+  document.getElementById('tab-today-content').style.display='none';
+  document.getElementById('tab-review-content').style.display='none';
+  document.getElementById('quiz-section').style.display='block';
+  document.getElementById('quiz-card').style.display='block';
+  document.getElementById('quiz-result').style.display='none';
+  document.getElementById('quiz-back').style.display='flex';
+  showMascot('파이팅! 다 맞힐 수 있어! 🔥','💪');
+  showQuestion(0);
+}
+
+function startBossQuiz(){
+  const st=getState();
+  const bossPool=[...(st.reviewQueue||[]).slice(-15),...todayWords];
+  if(bossPool.length<4){showToast('단어가 부족해! 더 공부하고 와봐 🐣','info');return;}
+  quizMode='boss';
+  quizWords=[...bossPool].sort(()=>Math.random()-.5).slice(0,20);
+  currentQ=0;quizScore=0;wrongInQuiz=[];
+  document.getElementById('score-now').textContent='0';
+  document.getElementById('score-total').textContent=quizWords.length;
+  document.getElementById('quiz-title-label').textContent='주간 보스전 👹';
+  const dots=document.getElementById('quiz-dots');
+  dots.innerHTML=quizWords.map((_,i)=>`<div class="qdot" id="qdot-${i}">·</div>`).join('');
+  document.getElementById('tab-today-content').style.display='none';
+  document.getElementById('tab-review-content').style.display='none';
+  document.getElementById('quiz-section').style.display='block';
+  document.getElementById('quiz-card').style.display='block';
+  document.getElementById('quiz-result').style.display='none';
+  document.getElementById('quiz-back').style.display='flex';
+  showMascot('보스가 나타났어!! 다 맞히고 물리쳐봐! 💥','😤');
+  showQuestion(0);
+}
+
+function showQuestion(idx){
+  const q=quizWords[idx];
+  document.getElementById('q-word').textContent=q.word;
+  document.getElementById('q-pos-hint').textContent=`${q.pos} — 이 단어의 뜻은?`;
+  document.getElementById('quiz-card').style.animation='none';
+  void document.getElementById('quiz-card').offsetWidth;
+  document.getElementById('quiz-card').style.animation='popIn .3s ease';
+  document.getElementById('qdot-'+idx).className='qdot active';
+
+  const distractors=WORD_DB.filter(w=>w.word!==q.word).sort(()=>Math.random()-.5).slice(0,3);
+  const options=[...distractors,q].sort(()=>Math.random()-.5);
+  const labels=['A','B','C','D'];
+  const c=document.getElementById('q-opts');
+  c.innerHTML='';
+  options.forEach((opt,i)=>{
+    const btn=document.createElement('button');
+    btn.className='q-opt';
+    btn.innerHTML=`<span class="q-opt-label">${labels[i]}</span>${opt.meaning}`;
+    btn.onclick=()=>pick(btn,opt,q,idx);
+    c.appendChild(btn);
+  });
+}
+
+function pick(btn,selected,correct,idx){
+  document.querySelectorAll('.q-opt').forEach(b=>b.disabled=true);
+  const isRight=selected.word===correct.word;
+  if(isRight){
+    btn.classList.add('correct');
+    quizScore++;
+    document.getElementById('score-now').textContent=quizScore;
+    document.getElementById('qdot-'+idx).className='qdot correct';
+    document.getElementById('qdot-'+idx).textContent='✓';
+    const msgs=['정답! 역시 최고야 🎉','완벽해! 💯','맞아맞아!! 🐣'];
+    showMascot(msgs[Math.floor(Math.random()*msgs.length)],'🎉');
+    showToast('✓ 정답! 🎉','ok');
+    if(quizMode==='review')markReviewCorrect(correct.word);
+  }else{
+    btn.classList.add('wrong');
+    document.querySelectorAll('.q-opt').forEach(b=>{if(b.textContent.includes(correct.meaning))b.classList.add('correct');});
+    document.getElementById('qdot-'+idx).className='qdot wrong';
+    document.getElementById('qdot-'+idx).textContent='✗';
+    wrongInQuiz.push({word:correct.word,meaning:correct.meaning});
+    const msgs=['에이 괜찮아, 다음엔 꼭 맞출 수 있어 💪','복습 목록에 추가해뒀어 🔁','조금만 더 연습하면 돼!'];
+    showMascot(msgs[Math.floor(Math.random()*msgs.length)],'😅');
+    showToast('✗ 틀렸어... 복습하자! 🔁','ng');
+    if(quizMode!=='review')addToReview(correct);
+  }
+  setTimeout(()=>{
+    if(idx+1<quizWords.length){showQuestion(idx+1);}
+    else showFinalResult();
+  },900);
+}
+
+function showFinalResult(){
+  document.getElementById('quiz-card').style.display='none';
+  document.getElementById('quiz-back').style.display='none';
+  document.getElementById('quiz-result').style.display='block';
+  const total=quizWords.length,pct=Math.round(quizScore/total*100);
+  document.getElementById('res-score').textContent=`${quizScore}/${total}`;
+  let mascot,msg;
+  if(pct===100){mascot='🏆';msg='완벽한 100점!! 진짜 대단해! 콩콩이가 감동받았어 🥹';}
+  else if(pct>=80){mascot='🌟';msg=`대박! ${quizScore}개나 맞혔어! 조금만 더 하면 완벽해!`;}
+  else if(pct>=60){mascot='💪';msg='잘했어! 틀린 거 복습하면 금방 다 외울 수 있어!';}
+  else{mascot='🌱';msg='괜찮아! 처음부터 잘 하는 사람은 없어. 같이 다시 해보자!';}
+  document.getElementById('res-mascot').textContent=mascot;
+  document.getElementById('res-msg').textContent=msg;
+  showMascot(msg,mascot);
+  const xp=quizScore*(quizMode==='boss'?15:quizMode==='review'?12:8)+(pct===100?20:0);
+  document.getElementById('xp-gain-label').textContent=`⭐ +${xp} XP 획득!`;
+  addXP(xp);
+  const wl=document.getElementById('wrong-list');
+  if(wrongInQuiz.length>0){
+    wl.innerHTML=`<div class="wrong-title">🔁 복습 목록 추가 (${wrongInQuiz.length}개)</div>`+
+      wrongInQuiz.map(w=>`<div class="wrong-row"><div class="wr-word">${w.word}</div><div class="wr-ans">뜻: <strong>${w.meaning}</strong></div></div>`).join('');
+  }else wl.innerHTML='';
+  renderReviewTab();
+}
+
+function retryQuiz(){startQuiz(quizMode);}
+function backToStudy(){
+  document.getElementById('quiz-section').style.display='none';
+  document.getElementById('tab-today-content').style.display='block';
+  switchTab('today');
+}
+
+// ===== WORD PROGRESS BAR =====
+function renderWordProgress(){
+  const total=WORD_DB.length;
+  const seen=(gs('kk_history')||[]);
+  // unique seen words (intersect with DB)
+  const dbWords=new Set(WORD_DB.map(w=>w.word));
+  const seenUnique=new Set(seen.filter(w=>dbWords.has(w)));
+  const seenCount=Math.min(seenUnique.size, total);
+  const remain=total-seenCount;
+  const pct=Math.round(seenCount/total*100);
+
+  document.getElementById('wp-total').textContent=total;
+  document.getElementById('wp-remain').textContent=remain;
+
+  // Animate bar after slight delay
+  setTimeout(()=>{
+    document.getElementById('wp-bar-fill').style.width=pct+'%';
+  },300);
+
+  // Segment dots — show 27 dots (≈ 27 blocks of ~15 words each = 414 words)
+  const segCount=Math.ceil(total/15);
+  const segsEl=document.getElementById('wp-segments');
+  segsEl.innerHTML='';
+  for(let i=0;i<segCount;i++){
+    const div=document.createElement('div');
+    const wordsInSeg=Math.min((i+1)*15, total);
+    if(seenCount>=wordsInSeg){
+      div.className='wp-seg done'; // fully done
+    } else if(seenCount>i*15){
+      div.className='wp-seg today'; // current / partial
+    } else {
+      div.className='wp-seg'; // not yet
+    }
+    segsEl.appendChild(div);
+  }
+
+  // Show complete banner if all done
+  const completeBanner=document.getElementById('complete-banner');
+  if(remain===0){
+    completeBanner.style.display='block';
+    document.getElementById('complete-count').textContent=total;
+    showMascot('와!! 모든 단어를 다 봤어!! 🏆 새 단어 베이스 요청하면 바로 업데이트해줄게!','🏆');
+  } else {
+    completeBanner.style.display='none';
+  }
+}
+
+function copyRequest(){
+  const text='콩콩 영단어 앱 - 새 단어 베이스 업데이트 요청!\n현재 414개 단어를 모두 학습했습니다.\n중복 없이 새로운 TOEIC 600~900점 수준 단어 400개 이상으로 업데이트해 주세요 🐣';
+  navigator.clipboard.writeText(text).then(()=>{
+    showToast('📋 요청 문구가 복사됐어! 붙여넣기해서 보내봐 😊','info');
+  }).catch(()=>{
+    showToast('직접 복사해줘: "새 단어 베이스 업데이트 요청!"','info');
+  });
+}
+
+// ===== MASCOT =====
+function showMascot(msg,emoji){
+  document.getElementById('mascot-msg').innerHTML=msg;
+  if(emoji){
+    document.getElementById('mascot-emoji').textContent=emoji;
+    setTimeout(()=>document.getElementById('mascot-emoji').textContent='🐣',2500);
+  }
+}
+
+// ===== LEVEL UP MODAL =====
+function showLevelUpModal(name){
+  document.getElementById('modal-title').textContent='레벨 업!! 🎊';
+  document.getElementById('modal-sub').innerHTML=`<strong>${name}</strong> 달성!<br>정말 열심히 하고 있어! 콩콩이도 너무 기뻐 🐣💕`;
+  document.getElementById('lvl-modal').classList.add('show');
+}
+function closeModal(){document.getElementById('lvl-modal').classList.remove('show');}
+
+// ===== TOAST =====
+let _tt;
+function showToast(msg,type){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className=`toast show ${type}`;
+  clearTimeout(_tt); _tt=setTimeout(()=>t.className='toast',1800);
+}
+</script>
+</body>
+</html>
